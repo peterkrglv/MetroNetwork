@@ -1,5 +1,6 @@
 package com.example.learncompose.ui.metro
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +44,7 @@ import com.example.learncompose.ui.icons.StationIC
 import org.koin.androidx.compose.koinViewModel
 import ru.alexgladkov.odyssey.compose.extensions.push
 import ru.alexgladkov.odyssey.compose.local.LocalRootController
+import ru.alexgladkov.odyssey.core.LaunchFlag
 
 @Composable
 fun Metro(
@@ -50,13 +52,25 @@ fun Metro(
 ) {
     val viewState = viewModel.viewState.collectAsState()
     val viewAction = viewModel.viewAction.collectAsState()
-
     val rootController = LocalRootController.current
+    val username = "User" //TODO: change... that...
 
-    when (viewAction.value) {
+    when (val action = viewAction.value) {
         is MetroAction.NavigateToStation -> {
-            rootController.push("station")
+            rootController.push(
+                "station",
+                launchFlag = LaunchFlag.ClearPrevious,
+                params = mapOf(
+                    "username" to username,
+                    "line" to action.line,
+                    "station" to action.station
+                )
+            )
             viewModel.obtainEvent(MetroEvent.Clear)
+        }
+        is MetroAction.LogOut -> {
+            viewModel.obtainEvent(MetroEvent.Clear)
+            rootController.push("login", launchFlag = LaunchFlag.ClearPrevious)
         }
 
         null -> {}
@@ -81,6 +95,10 @@ fun Metro(
                             station
                         )
                     )
+                },
+                onSearchButtonClicked = { viewModel.obtainEvent(MetroEvent.SearchButtonClicked) },
+                onLogOutClick = {
+                    viewModel.obtainEvent(MetroEvent.LogOut)
                 }
             )
 
@@ -94,12 +112,14 @@ fun Metro(
 fun MainState(
     state: MetroState.Main,
     onLineClick: (MetroLine) -> Unit,
-    onStationClick: (MetroLine, String) -> Unit
+    onStationClick: (MetroLine, String) -> Unit,
+    onSearchButtonClicked: () -> Unit,
+    onLogOutClick: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val darken: Float = isSystemInDarkTheme().let { if (it) 0.1f else 0.5f }
     val line: MutableState<MetroLine> = remember { mutableStateOf(state.line) }
-    val lines: MutableState<List<MetroLine>> = remember { mutableStateOf(state.lines) }
+    val lines = state.lines
     val primary = Color(
         (state.line.color.red - darken).let { if (it < 0) 0f else it },
         (state.line.color.green - darken).let { if (it < 0) 0f else it },
@@ -122,7 +142,10 @@ fun MainState(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { "onLogoutButtonClicked" }) {
+                    IconButton(onClick = {
+                        onLogOutClick()
+                        line.value = lines[0]
+                    }) {
                         Icon(
                             //log out button icon from drawable
                             imageVector = Logout,
@@ -151,17 +174,17 @@ fun MainState(
                     .background(MaterialTheme.colorScheme.secondaryContainer),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                items(lines.value.size) { i ->
+                items(lines.size) { i ->
                     Canvas(
                         Modifier
                             .size(40.dp)
                             .padding(4.dp)
                             .clickable {
-                                line.value = lines.value[i]
-                                onLineClick(lines.value[i])
+                                line.value = lines[i]
+                                onLineClick(lines[i])
                             }
                     ) {
-                        drawCircle(color = lines.value[i].color)
+                        drawCircle(color = lines[i].color)
                     }
                 }
             }
@@ -199,10 +222,8 @@ fun MainState(
 
 @Composable
 fun MetroIdle() {
-
 }
 
-// TODO: Odyssey - navigation
 
 @Composable
 fun MetroLoading() {
@@ -246,6 +267,8 @@ fun PreviewMetroMain() {
             lines = metroLines,
         ),
         onStationClick = { _, _ -> },
-        onLineClick = {}
+        onLineClick = {},
+        onSearchButtonClicked = {},
+        onLogOutClick = {}
     )
 }

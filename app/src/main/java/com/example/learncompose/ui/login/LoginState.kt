@@ -1,9 +1,10 @@
 package com.example.learncompose.ui.login
 
-sealed class LoginState() {
+sealed class LoginState {
     data object Idle : LoginState()
+    data object Loading : LoginState()
     data class Main(
-        val email: String = "",
+        val username: String = "",
         val password: String = "",
         val passwordVisibility: Boolean = false,
         val isError: Boolean = false,
@@ -13,9 +14,10 @@ sealed class LoginState() {
 
 sealed class LoginEvent {
     data object ShowPasswordButtonClicked : LoginEvent()
-    data class LoginButtonClicked(val email: String, val password: String) : LoginEvent()
-    data class SignUpButtonClicked(val email: String, val password: String) : LoginEvent()
+    data class LoginButtonClicked(val username: String, val password: String) : LoginEvent()
+    data class SignUpButtonClicked(val username: String, val password: String) : LoginEvent()
     data object Clear : LoginEvent()
+    data object CheckPastLogin : LoginEvent()
 }
 
 sealed class LoginAction {

@@ -15,7 +15,7 @@ sealed class StationState {
 }
 
 sealed class StationEvent {
-    data object LoadData : StationEvent()
+    data class LoadData(val line: MetroLine, val station: String) : StationEvent()
     data object ReturnButtonClicked : StationEvent()
     data object AddButtonClicked : StationEvent()
     data object Clear : StationEvent()

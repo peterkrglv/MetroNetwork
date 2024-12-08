@@ -17,8 +17,11 @@ sealed class MetroEvent {
     data class ChangeLine(val line: MetroLine) : MetroEvent()
     data object Clear : MetroEvent()
     data class SelectStation(val line: MetroLine, val station: String) : MetroEvent()
+    data object LogOut : MetroEvent()
+    data object SearchButtonClicked : MetroEvent()
 }
 
 sealed class MetroAction {
     data class NavigateToStation(val line: MetroLine, val station: String) : MetroAction()
+    data object LogOut : MetroAction()
 }

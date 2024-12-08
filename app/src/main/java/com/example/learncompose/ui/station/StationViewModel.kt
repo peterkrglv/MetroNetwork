@@ -1,11 +1,16 @@
 package com.example.learncompose.ui.station
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.learncompose.domain.LoadPostsUseCase
 import com.example.learncompose.domain.MetroLine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class StationViewModel : ViewModel() {
+class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewModel() {
     private val _viewState = MutableStateFlow<StationState>(StationState.Idle)
     val viewState: StateFlow<StationState>
         get() = _viewState
@@ -18,7 +23,7 @@ class StationViewModel : ViewModel() {
 
     fun obtainEvent(event: StationEvent) {
         when (event) {
-            is StationEvent.LoadData -> loadData()
+            is StationEvent.LoadData -> loadData(event.line, event.station)
             is StationEvent.ReturnButtonClicked -> returnButtonClicked()
             is StationEvent.AddButtonClicked -> addButtonClicked()
             is StationEvent.Clear -> clearAction()
@@ -37,17 +42,18 @@ class StationViewModel : ViewModel() {
         _viewAction.value = StationAction.navigateToMetro
     }
 
-    private fun loadData() {
-//        _viewState.value = StationState.Loading
-//        viewModelScope.launch {
-//            withContext(Dispatchers.IO) {
-//                Thread.sleep(2000)
-//                val posts = loadPostsUseCase.execute()
-//                _viewState.value = StationState.Main(
-//                    line,
-//                    station
-//                )
-//            }
-//        }
+    private fun loadData(line: MetroLine, station: String) {
+        _viewState.value = StationState.Loading
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                Thread.sleep(2000)
+                val posts = loadPostsUseCase.execute()
+                _viewState.value = StationState.Main(
+                    line,
+                    station,
+                    posts
+                )
+            }
+        }
     }
 }

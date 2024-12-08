@@ -19,6 +19,6 @@ fun RootComposeBuilder.navigationGraph() {
         Signup()
     }
     screen("station") {
-        Station()
+        Station(params = it as Map<String, Any>)
     }
 }

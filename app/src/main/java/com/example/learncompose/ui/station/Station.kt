@@ -1,5 +1,6 @@
 package com.example.learncompose.ui.station
 
+import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,11 +35,15 @@ import ru.alexgladkov.odyssey.core.LaunchFlag
 
 @Composable
 fun Station(
+    params: Map<String, Any>,
     viewModel: StationViewModel = koinViewModel()
 ) {
     val rootController = LocalRootController.current
     val viewState = viewModel.viewState.collectAsState()
     val viewAction = viewModel.viewAction.collectAsState()
+
+    val line = params["line"] as MetroLine
+    val station = params["station"] as String
 
     when (viewAction.value) {
         is StationAction.navigateToMetro -> {
@@ -47,14 +52,17 @@ fun Station(
         }
 
         is StationAction.addPost -> {
-            //TODO: add post
+            //addPost
         }
 
         null -> {}
     }
 
     when (val state = viewState.value) {
-        is StationState.Idle -> StationIdle()
+        is StationState.Idle -> {
+            viewModel.obtainEvent(StationEvent.LoadData(line, station))
+            StationIdle()
+        }
         is StationState.Main -> MainState(
             state = state as StationState.Main,
             onReturnButtonClicked = { viewModel.obtainEvent(StationEvent.ReturnButtonClicked) },

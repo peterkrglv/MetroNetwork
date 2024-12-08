@@ -33,6 +33,7 @@ fun Login(
     val viewState = viewModel.viewState.collectAsState()
     val viewAction = viewModel.viewAction.collectAsState()
 
+    Log.d("logout crash", "viewAction: $viewAction, viewState: $viewState")
     when (viewAction.value) {
         is LoginAction.NavigateToMetro -> {
             rootController.push("metro", launchFlag = LaunchFlag.ClearPrevious)
@@ -49,17 +50,30 @@ fun Login(
     }
 
     LearnComposeTheme {
-        MainState(
-            viewState.value as LoginState.Main,
-            onEyeIconClick = {
-                viewModel.sendEvent(LoginEvent.ShowPasswordButtonClicked)
-            },
-            onSignUpClick = { email, password ->
-                viewModel.sendEvent(LoginEvent.SignUpButtonClicked(email, password))
-            },
-            onLoginClick = { email, password ->
-                viewModel.sendEvent(LoginEvent.LoginButtonClicked(email, password))
-            })
+        when (viewState.value) {
+            is LoginState.Idle -> {
+                IdleState()
+                viewModel.sendEvent(LoginEvent.CheckPastLogin)
+            }
+
+            is LoginState.Loading -> {
+                LoadingState()
+            }
+
+            is LoginState.Main -> {
+                MainState(
+                    viewState.value as LoginState.Main,
+                    onEyeIconClick = {
+                        viewModel.sendEvent(LoginEvent.ShowPasswordButtonClicked)
+                    },
+                    onSignUpClick = { username, password ->
+                        viewModel.sendEvent(LoginEvent.SignUpButtonClicked(username, password))
+                    },
+                    onLoginClick = { username, password ->
+                        viewModel.sendEvent(LoginEvent.LoginButtonClicked(username, password))
+                    })
+            }
+        }
     }
 }
 
@@ -70,7 +84,7 @@ fun MainState(
     onSignUpClick: (String, String) -> Unit,
     onEyeIconClick: () -> Unit
 ) {
-    val email: MutableState<String> = remember { mutableStateOf(state.email) }
+    val username: MutableState<String> = remember { mutableStateOf(state.username) }
     val password: MutableState<String> = remember { mutableStateOf(state.password) }
 
     Column(
@@ -83,11 +97,11 @@ fun MainState(
         )
 
         MyTextField(
-            value = email.value,
-            label = "Email",
+            value = username.value,
+            label = "Username",
             isError = state.isError,
             onValueChange = {
-                email.value = it
+                username.value = it
             }
         )
 
@@ -104,14 +118,14 @@ fun MainState(
 
         Button(
             modifier = Modifier,
-            onClick = { onLoginClick(email.value, password.value) }
+            onClick = { onLoginClick(username.value, password.value) }
         ) {
             Text("Log in")
         }
 
         TextButton(
             modifier = Modifier,
-            onClick = { onSignUpClick(email.value, password.value) }
+            onClick = { onSignUpClick(username.value, password.value) }
         ) {
             Text("Sign up")
         }
@@ -120,8 +134,20 @@ fun MainState(
     if (state.loading) {
         LoadingBlock()
     }
-
 }
+
+
+@Composable
+fun LoadingState() {
+    LoadingBlock()
+}
+
+
+@Composable
+fun IdleState() {
+    LoadingBlock()
+}
+
 
 @Preview(showSystemUi = true)
 @Composable

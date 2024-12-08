@@ -8,7 +8,7 @@ class UserRepositoryImpl : UserRepository {
         return false
     }
 
-    override suspend fun login(email: String, password: String): Boolean {
+    override suspend fun login(username: String, password: String): Boolean {
         return true
     }
 

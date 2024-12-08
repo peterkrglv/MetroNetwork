@@ -1,5 +1,5 @@
 package com.example.learncompose.domain
 
-interface PostsRepository {
+interface PostRepository {
     suspend fun getPosts(): List<Post>
 }

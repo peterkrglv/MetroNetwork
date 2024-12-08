@@ -1,8 +1,10 @@
 package com.example.learncompose.ui.metro
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learncompose.domain.LoadLinesUseCase
+import com.example.learncompose.domain.LogoutUseCase
 import com.example.learncompose.domain.MetroLine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MetroViewModel(
-    private val loadLinesUseCase: LoadLinesUseCase
+    private val loadLinesUseCase: LoadLinesUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<MetroState>(MetroState.Idle)
     val viewState: StateFlow<MetroState>
@@ -27,7 +30,24 @@ class MetroViewModel(
             is MetroEvent.ChangeLine -> changeLine(event.line)
             is MetroEvent.Clear -> clearAction()
             is MetroEvent.SelectStation -> selectStation(event.line, event.station)
+            is MetroEvent.LogOut -> logOut()
+            is MetroEvent.SearchButtonClicked -> addButtonClicked()
         }
+    }
+
+    private fun addButtonClicked() {
+        //TODO("Not yet implemented")
+    }
+
+    private fun logOut() {
+        _viewState.value = MetroState.Loading
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                logoutUseCase.execute()
+                _viewState.value = MetroState.Idle
+            }
+        }
+        _viewAction.value = MetroAction.LogOut
     }
 
     private fun selectStation(line: MetroLine, station: String) {

@@ -71,6 +71,7 @@ dependencies {
     // implementation("io.insert-koin:koin-android:4.0.0")
     implementation("io.insert-koin:koin-androidx-compose:4.0.0")
 
+    //Navigation
     implementation(libs.odyssey.core)
     implementation(libs.odyssey.compose)
 }

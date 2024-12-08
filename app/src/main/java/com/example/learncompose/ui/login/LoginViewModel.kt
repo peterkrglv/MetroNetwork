@@ -1,7 +1,9 @@
 package com.example.learncompose.ui.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learncompose.domain.CheckPastLoginUseCase
 import com.example.learncompose.domain.LoginUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,8 +11,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LoginViewModel(val loginUseCase: LoginUseCase) : ViewModel() {
-    private val _viewState = MutableStateFlow<LoginState>(LoginState.Main())
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase,
+    private val checkPastLoginUseCase: CheckPastLoginUseCase
+) : ViewModel() {
+    private val _viewState = MutableStateFlow<LoginState>(LoginState.Idle)
     val viewState: StateFlow<LoginState>
         get() = _viewState
 
@@ -21,16 +26,33 @@ class LoginViewModel(val loginUseCase: LoginUseCase) : ViewModel() {
 
     fun sendEvent(event: LoginEvent) {
         when (event) {
+            is LoginEvent.CheckPastLogin -> checkPastLogin()
             is LoginEvent.ShowPasswordButtonClicked -> changeVisibilityState()
-            is LoginEvent.LoginButtonClicked -> login(event.email, event.password)
-            is LoginEvent.SignUpButtonClicked -> signup(event.email, event.password)
+            is LoginEvent.LoginButtonClicked -> login(event.username, event.password)
+            is LoginEvent.SignUpButtonClicked -> signup(event.username, event.password)
             is LoginEvent.Clear -> clearAction()
         }
 
     }
 
+    private fun checkPastLogin() {
+        _viewState.value = LoginState.Loading
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val username = checkPastLoginUseCase.execute()
+                Log.d("wtf", "username: $username")
+                if (username != null) {
+                    _viewAction.value = LoginAction.NavigateToMetro
+                } else {
+                    _viewState.value = LoginState.Main()
+                }
+            }
+        }
+    }
+
     private fun clearAction() {
         _viewAction.value = null
+        _viewState.value = LoginState.Idle
     }
 
     private fun changeVisibilityState() {
@@ -39,9 +61,9 @@ class LoginViewModel(val loginUseCase: LoginUseCase) : ViewModel() {
             (_viewState.value as LoginState.Main).copy(passwordVisibility = !(_viewState.value as LoginState.Main).passwordVisibility)
     }
 
-    private fun login(email: String, password: String) {
+    private fun login(username: String, password: String) {
         _viewState.value = (_viewState.value as LoginState.Main).copy(
-            email = email,
+            username = username,
             password = password,
             loading = true
         )
@@ -49,7 +71,7 @@ class LoginViewModel(val loginUseCase: LoginUseCase) : ViewModel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 Thread.sleep(2000)
-                val loginResult = loginUseCase.execute(email, password)
+                val loginResult = loginUseCase.execute(username, password)
                 if (loginResult) {
                     _viewState.value = LoginState.Main()
                     _viewAction.value = LoginAction.NavigateToMetro
@@ -62,8 +84,8 @@ class LoginViewModel(val loginUseCase: LoginUseCase) : ViewModel() {
         }
     }
 
-    private fun signup(email: String, password: String) {
-        _viewState.value = LoginState.Main(email = email, password = password)
+    private fun signup(username: String, password: String) {
+        _viewState.value = LoginState.Main(username = username, password = password)
         _viewAction.value = LoginAction.NavigateToSignUp
     }
 }
