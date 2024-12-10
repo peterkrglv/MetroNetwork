@@ -10,12 +10,10 @@ class SharedPrefRepositoryImpl(context: Context) : SharedPrefRepository {
 
     override suspend fun saveUser(username: String) {
         sharedPreferences.edit().putString("username", username).apply()
-        Log.d("wtf", "saved username: $username")
     }
 
     override suspend fun readUser(): String? {
         return sharedPreferences.getString("username", null)
-        Log.d("wtf", "read username: ${sharedPreferences.getString("username", null)}")
     }
 
     override suspend fun clearLogin() {

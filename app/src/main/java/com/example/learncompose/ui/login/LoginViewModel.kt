@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learncompose.domain.CheckPastLoginUseCase
+import com.example.learncompose.domain.GetHelloUseCase
 import com.example.learncompose.domain.LoginUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.withContext
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
-    private val checkPastLoginUseCase: CheckPastLoginUseCase
+    private val checkPastLoginUseCase: CheckPastLoginUseCase,
+    private val getHelloUseCase: GetHelloUseCase
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<LoginState>(LoginState.Idle)
     val viewState: StateFlow<LoginState>
@@ -36,6 +38,11 @@ class LoginViewModel(
     }
 
     private fun checkPastLogin() {
+//        viewModelScope.launch {
+//            withContext(Dispatchers.IO) {
+//                Log.d("OkHttp", getHelloUseCase.execute())
+//            }
+//        }
         _viewState.value = LoginState.Loading
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
