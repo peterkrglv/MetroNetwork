@@ -11,11 +11,4 @@ class UserRepositoryImpl : UserRepository {
     override suspend fun login(username: String, password: String): Boolean {
         return true
     }
-
-    override suspend fun logout() {
-    }
-
-    override suspend fun getUser(): User? {
-        return User("John Doe", "", "")
-    }
 }

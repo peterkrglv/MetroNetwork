@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.example.learncompose.R
 
@@ -159,7 +160,7 @@ fun EditPost(username: String, text: String, image: Uri, color: Color, onTextVal
                 modifier = Modifier.fillMaxWidth().clickable {
                     onImageClick()
                 },
-                painter = rememberImagePainter(image),
+                painter = rememberAsyncImagePainter(image), //rememberimagePainter(image),
                 contentDescription = null
             )
             TextField(

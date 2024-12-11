@@ -2,7 +2,7 @@ package com.example.learncompose.ui.station
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.learncompose.domain.LoadPostsUseCase
+import com.example.learncompose.domain.GetPostsUseCase
 import com.example.learncompose.domain.MetroLine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewModel() {
+class StationViewModel(private val getPostsUseCase: GetPostsUseCase) : ViewModel() {
     private val _viewState = MutableStateFlow<StationState>(StationState.Idle)
     val viewState: StateFlow<StationState>
         get() = _viewState
@@ -44,7 +44,7 @@ class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewMod
         _viewState.value = StationState.Loading
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val posts = loadPostsUseCase.execute()
+                val posts = getPostsUseCase.execute(station)
                 _viewState.value = StationState.Main(
                     line,
                     station,

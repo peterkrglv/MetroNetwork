@@ -141,7 +141,7 @@ fun MainState(
         ) {
             items(state.posts.size) { i ->
                 val post: Post = state.posts[i]
-                PostCard(post.username, post.date, post.text, post.photo, primary)
+                PostCard(post.username, post.date, post.text, post.image, primary)
             }
         }
     }
@@ -155,9 +155,9 @@ fun StationPreview() {
         MainState(
             state = StationState.Main(
                 MetroLine(1, "Сокольническая", Color.Red, emptyList()), "Охотный ряд", listOf(
-                    Post("username", "Охотный ряд", "Some text", "01.01.2025", ""),
-                    Post("username2", "Охотный ряд", "Some text", "01.01.2025", ""),
-                    Post("username2", "Охотный ряд", "Some text", "01.01.2025", "")
+                    Post("username", "Some text", "01.01.2025", ""),
+                    Post("username2", "Some text", "01.01.2025", ""),
+                    Post("username2", "Some text", "01.01.2025", "")
                 )
             ),
             onReturnButtonClicked = {},

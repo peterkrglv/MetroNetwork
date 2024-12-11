@@ -4,7 +4,7 @@ import com.example.learncompose.data.HelloRepositoryImpl
 import com.example.learncompose.data.LinesRepositoryWebImpl
 import com.example.learncompose.data.PostRepositoryImpl
 import com.example.learncompose.data.SharedPrefRepositoryImpl
-import com.example.learncompose.data.UserRepositoryImpl
+import com.example.learncompose.data.UserRepositoryWebImpl
 import com.example.learncompose.ui.add_post.PostViewModel
 import com.example.learncompose.ui.login.LoginViewModel
 import com.example.learncompose.ui.metro.MetroViewModel
@@ -17,7 +17,7 @@ import org.koin.dsl.module
 
 val dataModule = module {
     single<LinesRepository> { LinesRepositoryWebImpl(get()) }
-    single<UserRepository> { UserRepositoryImpl() }
+    single<UserRepository> { UserRepositoryWebImpl(get()) }
     single<PostRepository> { PostRepositoryImpl()}
     single<SharedPrefRepository> { SharedPrefRepositoryImpl(context = androidContext()) }
     single<HelloRepository> { HelloRepositoryImpl(get()) }
@@ -28,11 +28,11 @@ val domainModule = module {
     factory<LoadLinesUseCase> { LoadLinesUseCase(get()) }
     factory<LoginUseCase> { LoginUseCase(get(), get()) }
     factory<SignupUseCase> { SignupUseCase(get()) }
-    factory<LoadPostsUseCase> { LoadPostsUseCase(get()) }
+    factory<GetPostsUseCase> { GetPostsUseCase(get()) }
     factory<GetPastLoginUseCase> { GetPastLoginUseCase(get()) }
     factory<LogoutUseCase> { LogoutUseCase(get()) }
     factory<GetHelloUseCase> { GetHelloUseCase(get()) }
-    factory<LoadPostsUseCase> { LoadPostsUseCase(get()) }
+    factory<GetPostsUseCase> { GetPostsUseCase(get()) }
     factory<UploadPostUseCase> { UploadPostUseCase(get()) }
 }
 
