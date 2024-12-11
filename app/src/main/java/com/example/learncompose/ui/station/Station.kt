@@ -1,7 +1,5 @@
 package com.example.learncompose.ui.station
 
-import android.util.Log
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,8 +49,16 @@ fun Station(
             viewModel.obtainEvent(StationEvent.Clear)
         }
 
-        is StationAction.addPost -> {
-            //addPost
+        is StationAction.navigateToAddPost -> {
+            //передать параметры state.line, state.station
+            rootController.push(
+                "add_post",
+                params = mapOf(
+                    "line" to line,
+                    "station" to station
+                )
+            )
+            viewModel.obtainEvent(StationEvent.Clear)
         }
 
         null -> {}
@@ -90,18 +96,10 @@ fun MainState(
     onAddButtonClicked: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
-    val darken: Float = isSystemInDarkTheme().let { if (it) 0.1f else 0.5f }
-    val primary = Color(
-        (state.line.color.red - darken).let { if (it < 0) 0f else it },
-        (state.line.color.green - darken).let { if (it < 0) 0f else it },
-        (state.line.color.blue - darken).let { if (it < 0) 0f else it },
-        state.line.color.alpha - 0.2f
-    )
+    val primary = state.line.color
 
     Scaffold(
         modifier = Modifier,
-
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -156,7 +154,7 @@ fun StationPreview() {
     LearnComposeTheme {
         MainState(
             state = StationState.Main(
-                MetroLine("Сокольническая", Color.Red, emptyList()), "Охотный ряд", listOf(
+                MetroLine(1, "Сокольническая", Color.Red, emptyList()), "Охотный ряд", listOf(
                     Post("username", "Охотный ряд", "Some text", "01.01.2025", ""),
                     Post("username2", "Охотный ряд", "Some text", "01.01.2025", ""),
                     Post("username2", "Охотный ряд", "Some text", "01.01.2025", "")

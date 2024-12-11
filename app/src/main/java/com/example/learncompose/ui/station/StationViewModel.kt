@@ -19,8 +19,6 @@ class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewMod
     val viewAction: StateFlow<StationAction?>
         get() = _viewAction
 
-    private lateinit var line: MetroLine
-
     fun obtainEvent(event: StationEvent) {
         when (event) {
             is StationEvent.LoadData -> loadData(event.line, event.station)
@@ -35,7 +33,7 @@ class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewMod
     }
 
     private fun addButtonClicked() {
-        TODO("Not yet implemented")
+        _viewAction.value = StationAction.navigateToAddPost
     }
 
     private fun returnButtonClicked() {
@@ -46,7 +44,6 @@ class StationViewModel(private val loadPostsUseCase: LoadPostsUseCase) : ViewMod
         _viewState.value = StationState.Loading
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                Thread.sleep(2000)
                 val posts = loadPostsUseCase.execute()
                 _viewState.value = StationState.Main(
                     line,

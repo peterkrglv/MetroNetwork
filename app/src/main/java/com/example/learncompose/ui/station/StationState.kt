@@ -23,5 +23,5 @@ sealed class StationEvent {
 
 sealed class StationAction {
     data object navigateToMetro : StationAction()
-    data object addPost : StationAction()
+    data object navigateToAddPost : StationAction()
 }

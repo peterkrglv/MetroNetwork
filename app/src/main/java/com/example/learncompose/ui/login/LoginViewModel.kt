@@ -3,7 +3,7 @@ package com.example.learncompose.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.learncompose.domain.CheckPastLoginUseCase
+import com.example.learncompose.domain.GetPastLoginUseCase
 import com.example.learncompose.domain.GetHelloUseCase
 import com.example.learncompose.domain.LoginUseCase
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
-    private val checkPastLoginUseCase: CheckPastLoginUseCase,
+    private val getPastLoginUseCase: GetPastLoginUseCase,
     private val getHelloUseCase: GetHelloUseCase
 ) : ViewModel() {
     private val _viewState = MutableStateFlow<LoginState>(LoginState.Idle)
@@ -46,8 +46,7 @@ class LoginViewModel(
         _viewState.value = LoginState.Loading
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val username = checkPastLoginUseCase.execute()
-                Log.d("wtf", "username: $username")
+                val username = getPastLoginUseCase.execute()
                 if (username != null) {
                     _viewAction.value = LoginAction.NavigateToMetro
                 } else {

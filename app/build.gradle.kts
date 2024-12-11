@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-kapt")
+    kotlin("plugin.serialization") version "1.9.10"
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -39,9 +42,9 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
+//    composeOptions {
+//        kotlinCompilerExtensionVersion = "1.5.1"
+//    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -70,6 +73,7 @@ dependencies {
     // Dependency Injection
     // implementation("io.insert-koin:koin-android:4.0.0")
     implementation("io.insert-koin:koin-androidx-compose:4.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // OkHttp
     implementation(libs.okhttp)
@@ -78,4 +82,11 @@ dependencies {
     //Navigation
     implementation(libs.odyssey.core)
     implementation(libs.odyssey.compose)
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+}
+
+kapt {
+    correctErrorTypes = true
 }

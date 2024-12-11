@@ -31,12 +31,11 @@ class MetroViewModel(
             is MetroEvent.Clear -> clearAction()
             is MetroEvent.SelectStation -> selectStation(event.line, event.station)
             is MetroEvent.LogOut -> logOut()
-            is MetroEvent.SearchButtonClicked -> addButtonClicked()
+            is MetroEvent.SearchButtonClicked -> searchButtonClicked()
         }
     }
 
-    private fun addButtonClicked() {
-        //TODO("Not yet implemented")
+    private fun searchButtonClicked() {
     }
 
     private fun logOut() {
@@ -70,6 +69,7 @@ class MetroViewModel(
             withContext(Dispatchers.IO) {
                 Thread.sleep(2000)
                 val lines = loadLinesUseCase.execute()
+                Log.d("OkHttp", "Lines: $lines")
                 _viewState.value = MetroState.Main(
                     line = lines[0],
                     lines = lines

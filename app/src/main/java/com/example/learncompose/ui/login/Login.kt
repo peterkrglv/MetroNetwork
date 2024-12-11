@@ -41,7 +41,6 @@ fun Login(
         }
 
         is LoginAction.NavigateToSignUp -> {
-            Log.d("wtf", "Login")
             rootController.push("signup")
             viewModel.sendEvent(LoginEvent.Clear)
         }

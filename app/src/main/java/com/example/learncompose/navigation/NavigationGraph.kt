@@ -1,5 +1,6 @@
 package com.example.learncompose.navigation
 
+import com.example.learncompose.ui.add_post.AddPost
 import com.example.learncompose.ui.login.Login
 import com.example.learncompose.ui.metro.Metro
 import com.example.learncompose.ui.signup.Signup
@@ -20,5 +21,8 @@ fun RootComposeBuilder.navigationGraph() {
     }
     screen("station") {
         Station(params = it as Map<String, Any>)
+    }
+    screen("add_post") {
+        AddPost(params = it as Map<String, Any>)
     }
 }

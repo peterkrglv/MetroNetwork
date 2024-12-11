@@ -18,9 +18,9 @@ class HelloRepositoryImpl(
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
                     throw IOException("Запрос к серверу не был успешен:" +
-                            " ${response.code()} ${response.message()}")
+                            " ${response.code} ${response.message}")
                 }
-                return response.body()!!.string()
+                return response.body!!.string()
             }
         } catch (e: IOException) {
             Log.d("OkHttp", "Some error occured ${e.message}")

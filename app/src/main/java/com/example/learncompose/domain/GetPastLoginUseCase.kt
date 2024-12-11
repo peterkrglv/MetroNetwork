@@ -1,6 +1,6 @@
 package com.example.learncompose.domain
 
-class CheckPastLoginUseCase(
+class GetPastLoginUseCase(
     private val repo: SharedPrefRepository
 ) {
     suspend fun execute(): String? {
